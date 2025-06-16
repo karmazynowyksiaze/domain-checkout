@@ -3,6 +3,7 @@ import time
 import ssl
 import socket
 import whois
+import csv
 from urllib.parse import urlparse
 from datetime import datetime
 
@@ -73,4 +74,18 @@ def get_domain_expiry_date(domain):
 
     except Exception as e:
         print(f"[ERR_WHOIS]: {str(e)}")
+
+def save_to_csv(data, filename):
+    """SAVE TO CSV FILE"""
+    try:
+        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['Witryna', 'Data wygaśnięcia certyfikatu', "Data wygaśnięcia domeny"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+
+        print(f"RESULTS SAVE TO FILE: {filename}")
+    except Exception as e:
+        print(f"[ERR] CANNOT SAVE DATA TO CSV FILE: {e}")
 
