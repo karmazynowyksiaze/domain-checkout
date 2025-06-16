@@ -89,3 +89,44 @@ def save_to_csv(data, filename):
     except Exception as e:
         print(f"[ERR] CANNOT SAVE DATA TO CSV FILE: {e}")
 
+def main():
+
+    input_file = 'domains.txt'
+    output_file = 'domains_info_results.csv'
+    domains = read_domains_from_file(input_file)
+
+    print("Start validate SSL certifacate and domains")
+    print(f"Reading domains from file: {input_file}")
+
+    if not domains:
+        print("[ERR] CANNOT FIND ANY DOMAINS IN FILE")
+        return
+    print(f"Find {len(domains)} domains to checkout")
+    results = []
+
+    for i, domain in enumerate(domains, 1):
+        print(f"Checkout {i}/len{domains}: {domain}")
+        ssl_expiry = get_ssl_expiry_date(domain)
+        domain_expiry = get_domain_expiry_date(domain)
+        
+        results.append({
+            'Witryna': domain,
+            'Data wygaśnięcia certyfikatu': ssl_expiry,
+            'Data wygaśnięcia domeny': domain_expiry
+        })
+        time.sleep(1)
+
+        print(f"SSL:    {ssl_expiry}")
+        print(f"DOMENA: {domain_expiry}")
+    
+    save_to_csv(results, output_file)
+    print(f"\nEnding checkout {len(domains)} domains")
+
+if __name__ == "__main__":
+    try:
+        import whois
+    except ImportError:
+        print("[ERR]: PYTHON-WHOIS IS NOT INSTALLED")
+        sys.exit(1)
+    
+    main()
