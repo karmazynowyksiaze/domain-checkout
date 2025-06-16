@@ -2,6 +2,7 @@ import sys
 import time
 import ssl
 import socket
+import whois
 from urllib.parse import urlparse
 from datetime import datetime
 
@@ -49,3 +50,27 @@ def get_ssl_expiry_date(domain, port=443):
     except Exception as e:
         print (f"[ERR]: {str(e)}")
     
+def get_domain_expiry_date(domain):
+    """GET DOMAIN EXPIRATION DATE WITH WHOIS"""
+    try:
+        w = whois.whois(domain)
+        expiry_date = w.expiration_date
+
+        parts = domain.split('.')
+        if len(parts) > 2:
+            domain = '.'.join(parts[-2:])
+        
+        if expiry_date:
+            if isinstance(expiry_date, list):
+                expiry_date = expiry_date[0]
+        
+            if isinstance(expiry_date, datetime):
+                return expiry_date.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                return str(expiry_date)
+        else:
+            return f"CANNOT GET INFO ABOUT DOMAIN EXPIRY DATE"
+
+    except Exception as e:
+        print(f"[ERR_WHOIS]: {str(e)}")
+
